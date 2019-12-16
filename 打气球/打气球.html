@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        html,body{
+            height: 100%;
+        }
+        body{
+            width: 100%;
+            overflow: hidden;
+        }
+        .bigbox{
+            width: inherit;
+            height: inherit;
+            position: relative;
+        }
+        .box{
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <audio src="bgm_zhuxuanlv.mp3" loop="loop"  autoplay="autoplay" id="ccc"></audio>
+    <div class="bigbox">
+        <ul class="box">
+            <li class="a">分数:<span>0</span></li>
+            <li class="b">倒计时:<span>30</span></li>
+        </ul>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script>
+       var ccc=document.getElementById('ccc');
+        if(ccc.paused){
+            ccc.play();
+        }
+        class ball{
+            constructor(parent){
+                this.x=0;
+                this.y=0;
+                this.speed=0;
+                this.parent=parent;
+                // this.node=0;
+                this.init();
+                this.creatimg();
+            };
+            init(){
+                this.x=parseInt(Math.random()*1300+100);
+                this.y=parseInt(Math.random()*200+700);
+                // this.y=parseInt(Math.random()*100);
+                this.speed=parseInt(Math.random()*10);
+            };
+            creatimg(){
+                var num=parseInt(Math.random()*31);
+                if(num==0){
+                    var img=`<img src='气球3.png'>`;
+                    this.num=3;
+                }else if(num>=1 && num<=10){
+                    var img=`<img src='气球1小.png'>`;
+                    this.num=2;
+                }else{
+                    var img=`<img src='气球1.png'>`;
+                    this.num=1;
+                }
+                this.node=$(img);
+                this.parent.append(this.node[0]);
+                this.node.css({
+                   'position':'absolute',
+                   'left':this.x,
+                   'top':this.y,
+                })
+            };
+            move(){
+                this.y-=this.speed;
+                this.node.css('top',this.y);
+                if(parseInt(this.node.css('top'))<-parseInt(this.node.width())){
+                    this.node.remove();
+                }
+            }
+        }
+        $(document).on('click',function(e){
+            e.preventDefault();
+            ballarr.forEach(function(item,index){
+                if(e.target==item.node[0]){
+                    score+=item.num;
+                    ballarr.splice(index,1);
+                    item.node.remove();
+                    $('span','.a').html(score)
+                }
+            })
+        })
+        var ballarr=[];
+        var fn=throttle(400);
+        function throttle(gaptime){
+            let _lasttime=null
+            return function(){
+                let _nowtime=+ new Date();
+                if(_nowtime - _lasttime > gaptime){
+                    var b=new ball($('.bigbox'));
+                    ballarr.push(b);
+                    _lasttime=_nowtime;
+                } 
+            }
+        }
+        var time1=null,time2=null,timenum=30,score=0;
+        time1=setInterval(function(){
+            fn();
+            ballarr.forEach(function(item,index){
+                item.move();
+            })
+        },40)
+        time2=setInterval(function(){
+            timenum--;
+            $('span','.b').html(timenum);
+            if(timenum==0){
+                clearInterval(time1);
+                ballarr.forEach(function(item,index){
+                    item.node.remove();
+                })
+                ballarr.splice(0,200);
+                clearInterval(time2);
+            }
+        },1000)
+
+    </script>
+</body>
+</html>
