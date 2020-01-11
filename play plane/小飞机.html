@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1423622_cs96psfzj2n.css">
+    <title>Document</title>
+    <style>
+        .main{
+            height: 644px;
+            width: 440px;
+            border: 1px solid black;
+            background-image: url(img/bg2.png);
+            position: relative;
+        }
+        img{
+            position: absolute;
+        }
+        div>span{
+            position: absolute;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="main">
+        <span class="iconf iconf-zantingtingzhi"></span>
+        <span class="iconf iconf-refresh"></span>
+        <!-- <span class="iconf iconf-love-copy"></span> -->
+    </div>
+    <script>
+        //创建飞机类
+        var main=document.getElementsByClassName('main')[0];
+        function Plane(x,y,speed,imgSrc){
+            this.x=x;
+            this.y=y;
+            this.speed=speed;
+            this.imgSrc=imgSrc;
+            //创建img标签，保存在对象中，向main添加子节点img，确定img初始位置
+            this.init=function(){ 
+                this.img= document.createElement('img');
+                main.appendChild(this.img);
+
+                this.img.src=imgSrc;
+                this.img.style.left=this.x+'px';
+                this.img.style.top=this.y+'px';            
+            }
+            this.init()
+        }
+
+
+        //小飞机
+
+        //创建小飞机类，由飞机类继承过来
+        function Smallplane(x,y,speed,imgSrc){
+            Plane.apply(this,arguments);
+        }
+        //实例化小飞机，利用定时器产生多个实例化的小飞机，然后把小飞机存储在数组中，便于之后对小飞机的操作。
+        var xiaofeiji=[];
+        setInterval(function(){
+            var a=parseInt(Math.random()*4),aState='';
+            if(a==0){
+                aState='img/BluePlane.png'
+            }else if(a==1){
+                aState='img/BluePlane1.png'
+            }else if(a==2){
+                aState='img/BluePlane2.png'
+            }else if(a==3){
+                aState='img/BluePlane3.png'
+            }
+            var s1=new Smallplane(parseInt(Math.random()*396),-parseInt(Math.random()*16+30),parseInt(Math.random()*5+5),aState)
+            xiaofeiji.push(s1);
+        },1500)
+        //小飞机的移动
+        Smallplane.prototype.smallmove=function(){
+            this.y+=this.speed;
+            this.img.style.top=this.y+'px';
+        }
+        //超出下边界的小飞机销毁，
+        setInterval(function(){
+            xiaofeiji.forEach(function(item,index){
+                item.smallmove();
+                if(parseInt(item.img.offsetTop) >= 644){
+                    //删除相对应的img节点
+                    item.img.remove();
+                    //删除相对应的被存储的实例小飞机
+                    xiaofeiji.splice(index,1);
+                }
+            })
+        },30)
+
+
+        //玩家飞机
+
+            //创建玩家飞机类，由飞机继承，
+        function playerplane(x,y,speed,imgSrc){
+            Plane.apply(this,arguments);
+        }
+            //实例化玩家飞机
+        var s2=new playerplane(156,520,10,'img/LiPlane2.gif')
+            //玩家飞机的移动
+                //向上移动
+        playerplane.prototype.movetop=function(){
+            this.y-=this.speed;
+            this.img.style.top=this.y+'px';
+            if(parseInt(this.img.style.top) <= 0){
+                this.img.style.top=0+'px';
+                this.y=0;
+            }
+        }
+                //向下移动
+        playerplane.prototype.movebottom=function(){
+            this.y+=this.speed;
+            this.img.style.top=this.y+'px';
+            if(parseInt(this.img.style.top) >= 644-parseInt(this.img.clientHeight)){
+                this.img.style.top=644-parseInt(this.img.clientHeight)+'px';
+                this.y=parseInt(this.img.style.top);
+            }
+        }
+                //向左移动
+        playerplane.prototype.moveleft=function(){
+            this.x-=this.speed;
+            this.img.style.left=this.x+'px';
+            if(parseInt(this.img.style.left) <= 0){
+                this.img.style.left=0+'px';
+                this.x=0;
+            }
+        }
+                //向右移动
+        playerplane.prototype.moveright=function(){
+            this.x+=this.speed;
+            this.img.style.left=this.x+'px';
+            if(parseInt(this.img.style.left) >= 440-parseInt(this.img.clientWidth)){
+                this.img.style.left=440-parseInt(this.img.clientWidth)+'px';
+                this.x=parseInt(this.img.style.left);
+            }
+        }
+                //玩家飞机正式移动,根据布尔值来启动飞机的移动，可以消除飞机刚开始移动时的停顿
+        var leftState=false,upState=false,rightState=false,downState=false,bulletState=false;
+        var timeid1=null;
+        document.onkeydown=function(e){
+            switch(e.keyCode){
+                case 37:leftState=true;break;
+                case 38:upState=true;break;
+                case 39:rightState=true;break;
+                case 40:downState=true;break;
+                case 32:bulletState=true;break;
+            }
+        }
+        document.onkeyup=function(e){
+            switch(e.keyCode){
+                case 37:leftState=false;break;
+                case 38:upState=false;break;
+                case 39:rightState=false;break;
+                case 40:downState=false;break;
+                case 32:bulletState=false;break;
+            }
+        }
+        setInterval(function(){
+            if(leftState){
+                s2.moveleft()
+            }
+            if(upState){
+                s2.movetop()
+            }
+            if(rightState){
+                s2.moveright()
+            }
+            if(downState){
+                s2.movebottom()
+            }
+            if(bulletState){
+                if(!timeid1){
+                    timeid1=setTimeout(function(){
+                        timeid1=null;
+                         //在实例子弹过程中，无法通过代码直接获取子弹的宽度，第一个clientWidth为0，解决看169
+                        zd=new Bullet(1,1,10,'img/bullet_03.png')
+                        zd.x=s2.x+parseInt(s2.img.clientWidth)/2-parseInt(zd.img.clientWidth)/2;
+                        zd.img.style.left=zd.x+'px';
+                        zd.y=s2.y-parseInt(zd.img.clientHeight)+5;
+                        zd.img.style.top=zd.y+'px';
+                        bulletArr.push(zd)
+                    },200)
+                 }
+            }
+        },30)
+        //创建子弹类，子弹类可以由飞机类继承而来，因为拥有同样的属性。
+        function Bullet(x,y,speed,imgSrc){
+            // arguments[0]=s2.x+parseInt(s2.img.clientWidth)/2-parseInt(this.img.clientWidth)/2
+            Plane.apply(this,arguments);
+        }
+            //实例化子弹见128行,先实例化一个子弹s22，然后隐藏，其作用为令128行第一个clientWidth有值，不为0
+        var bulletArr=[];
+        var s22=new Bullet(-60,0,0,'img/bullet_03.png');
+        // var s22=new Bullet(-60,0,0,'img/PaperPlane_01.png');
+        s22.img.style.opacity='0';
+            //子弹移动
+        Bullet.prototype.bulletmove=function(){
+            this.y-=this.speed;
+            this.img.style.top=this.y+'px';
+        }
+        setInterval(function(){
+            if(bulletArr.length !=0){
+                bulletArr.forEach(function(item,index){                  
+                    item.bulletmove();
+                    if(item.y<0){
+                        item.img.remove();
+                        bulletArr.splice(index,1);
+                    }
+                })
+            }
+        },30)
+        //子弹碰撞
+        Bullet.prototype.crash=function(){
+            _this=this;
+            _this.crashState=false;
+            xiaofeiji.forEach(function(item,index){
+                if(_this.y>item.y && _this.y<item.y+parseInt(item.img.clientHeight) && _this.x>item.x && _this.x<item.x+parseInt(item.img.clientWidth)){
+                    var imgcrash=new Plane(item.x,item.y,0,'img/BeiJi_02.png');
+                    main.replaceChild(imgcrash.img,item.img)
+                    xiaofeiji.splice(index,1);
+                    _this.img.remove();
+                    setTimeout(function(){
+                        imgcrash.img.remove();
+                    },500)
+                    _this.crashState=true;
+                }
+            })
+        }
+        var timeid2=null;
+            timeid2=setInterval(function(){
+                bulletArr.forEach(function(item,index){
+                    item.crash()
+                    if(_this.crashState){
+                        bulletArr.splice(index,1)
+                    }
+                },30)
+            })
+    </script>
+</body>
+</html>
