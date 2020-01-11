@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #myCanvas{
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="400" height="600"></canvas>
+    <script>
+        var canvas=document.getElementById('myCanvas');
+        var ctx=canvas.getContext('2d');
+
+        function bubble(ctx){
+            this.x=canvas.width/2;
+            this.y=canvas.height-20;
+            this.r=8;
+            this.g=0.1;
+            this.ctx=ctx;
+            this.ymove=Math.random()*2-10;//y方向上移动的距离
+            this.xmove=Math.random()*4-2;//x方向上移动的距离
+            //颜色
+            this.setcolor='rgba('+parseInt(Math.random()*256)+','+parseInt(Math.random()*256)+','+parseInt(Math.random()*256)+')';
+        }
+        bubble.prototype.init=function(){
+            //创建小球,小球的移动，改变this.x,this.y，不断绘制新的小球，清除旧的小球。
+            this.ctx.beginPath();
+            this.ctx.arc(this.x,this.y,this.r,0,2*Math.PI,false);
+            this.ctx.fillStyle=this.setcolor;
+            this.ctx.fill();
+        }
+        bubble.prototype.move=function(){
+            this.ymove+=this.g;
+            this.y+=this.ymove;
+            this.x+=this.xmove;
+        }
+        var bubblearr=[];
+        function throttle(gaptime){
+            let _lasttime=null
+            return function(){
+                let _nowtime=+ new Date();
+                if(_nowtime - _lasttime > gaptime || !_lasttime){
+                    var b= new bubble(ctx);
+                    bubblearr.push(b);
+                    _lasttime=_nowtime;
+                } 
+            }
+        }
+        var creatball=throttle(100);
+        setInterval(function(){
+            creatball();
+            ctx.clearRect(0,0,400,600);//清除后再重新绘制
+            for(var i=0,len=bubblearr.length;i<len-1;i++){
+                bubblearr[i].init();
+                bubblearr[i].move();
+            }
+            if(bubblearr.length>200){
+                bubblearr.shift();
+            }
+
+        },20)
+    </script>
+</body>
+</html>

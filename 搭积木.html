@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .bigbox{
+            height: 400px;
+            width: 200px;
+            border: 1px solid black;
+            box-sizing: border-box;
+            position: absolute;
+            left: 100px;
+            top: 20px;
+        }
+        .bigbox ul{
+            position: absolute;
+            display: flex;
+        }
+        .bigbox ul li{
+            box-sizing: border-box;
+            border: 1px solid black;
+            height: 10px;
+            width: 10px;
+        }
+        .a{
+            height: 10px;
+            width: 80px;
+            bottom: 0;
+            left: 60px;
+        }
+        .b{
+            position: absolute;
+            left: 100px;
+            top: 20px;
+            font-size: 25px;
+            opacity: 0;
+            transition: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="b">
+        <span>游戏结束</span>
+    </div>
+    <div class="bigbox">
+        <ul class="a">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script>
+        function brick(){
+            this.initbrick();
+            timeid=null;
+            timeid=setInterval(function(){
+                this.movebrick();
+                if(parseInt($(this.selector).css('left'))>this.__proto__.maxx){
+                    clearInterval(timeid);
+                    $('.b').css('opacity','1');
+                }
+            }.bind(this),1000)
+        }
+        $(document).on('click',function(){
+            clearInterval(timeid);
+            if(parseInt($(fn.selector).css('left'))>fn.__proto__.minx-fn.__proto__.maxnum*10 && parseInt($(fn.selector).css('left'))<fn.__proto__.maxx){
+                fn.__proto__.minx=parseInt($(fn.selector).css('left'));
+                fn.__proto__.maxx=parseInt($(fn.selector).css('left'))+fn.__proto__.maxnum*10;
+                new brick();
+            }else{
+                console.log(1);
+                $('.b').css('opacity','1');
+            }
+        })
+        brick.prototype.bottom=10;
+        brick.prototype.maxnum=8;
+        brick.prototype.minx=60;
+        brick.prototype.maxx=140;
+        brick.prototype.initbrick=function(){
+            var bricknum=parseInt(Math.random()*(this.maxnum)+1)//小积木个数位1到8个
+            var str='';
+            if(bricknum<this.maxnum){
+                this.__proto__.maxnum=bricknum;
+            }
+            var ul=document.createElement('ul');
+            for(var i=1;i<=this.maxnum;i++){
+                str+=`<li></li>`;
+            }
+            $(ul).append(str);
+            $('.bigbox').append(ul);
+            $(ul).css({
+                'bottom':this.bottom+'px',
+                'left':-this.__proto__.maxnum*10+'px',
+            })
+            this.selector=ul;
+            this.__proto__.bottom=this.__proto__.bottom+10;
+            window.fn=this;//存储实例化对象
+        }
+        brick.prototype.movebrick=function(){
+            $(this.selector).css('left','+=10')
+        }
+        new brick()
+    </script>
+</body>
+</html>

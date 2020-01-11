@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .bigbox{
+            border: 1px solid black;
+            width: 400px;
+            height: 600px;
+            position:absolute;
+            top:20px;
+            left: 400px;
+        }
+        .circle{
+            height: 20px;
+            width: 20px;
+            border-radius: 10px;
+            background-color: deeppink;
+            transition:all 0.4s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="bigbox">
+        <div class="circle"></div> 
+        <div class="c1"></div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script>
+        (function(){
+            //指明顶层对象
+            var _grobal=function(){
+                return this
+            }();
+            //建立构造函数,按对象传递参数，按位传递参数,存储属性和方法
+            var ball=function(){
+                if(!(arguments[0] instanceof Object)){
+                    var [selector,size,bg_color,x,y,speed,moveStateX,moveStateY]=[...arguments]
+                    this.selector=document.querySelector(selector);
+                    this.size=size || 20;
+                    this.bg_color=bg_color || 'deeppink';
+                    this.x=x || 100;
+                    this.y=y || 100;
+                    this.speed=speed || 20;
+                    this.moveStateX=moveStateX ||'r';
+                    this.moveStateY=moveStateY || 'b';
+                }else{
+                    var obj=arguments[0];
+                    this.selector=document.querySelector(obj.selector);
+                    this.size=obj.size || 20;
+                    this.bg_color=obj.bg_color || 'deeppink';
+                    this.x=obj.x || 100;
+                    this.y=obj.y || 100;
+                    this.speed=speed || 20;
+                    this.moveStateX=obj.moveStateX ||'r';
+                    this.moveStateY=obj.moveStateY || 'b'; 
+                }               
+                this.init_shape();
+                var timeid=null;
+                timeid=setInterval(function(){
+                    this.move();
+                }.bind(this),200)
+            };
+            //初始化小球,设置样式
+            ball.prototype.init_shape=function(){
+                this.selector.style.position='absolute';
+                this.selector.style.height=this.size+'px';
+                this.selector.style.width=this.size+'px';
+                this.selector.style.left=this.x+'px';
+                this.selector.style.top=this.y+'px';
+                this.selector.style.backgroundColor=this.bg_color;
+                this.selector.style.borderRadius=this.size/2+'px';
+            }
+            //小球的运动轨迹，盒子宽400，高600
+            ball.prototype.move=function(){
+                // $(this.selector).css('transition-duration','0.2s')
+                if(this.moveStateX =="r"){
+                    this.x+=this.speed;
+                }
+                if(this.moveStateX =="l"){
+                    this.x-=this.speed;
+                }
+                if(this.moveStateY =="t"){
+                    this.y-=this.speed;
+                }
+                if(this.moveStateY =="b"){
+                    this.y+=this.speed;
+                }
+                if(this.y+this.size>600){
+                    if(this.moveStateX=='l'){
+                        this.x=this.x+this.y-600+this.size;
+                    }
+                    if(this.moveStateX=='r'){
+                        this.x=this.x-(this.y-600+this.size);
+                    }
+                    this.y=600-this.size;
+                    this.moveStateY='t';
+                    // Math.abs(20-(this.y-600+this.size))*0.2/20
+                    // $(this.selector).css('transition-duration',Math.abs(20-(this.y-600+this.size))*0.2/20+'s')
+                }
+                if(this.y<0){
+                    if(this.moveStateX=='l'){
+                        this.x=this.x-this.y;
+                    }
+                    if(this.moveStateX=='r'){
+                        this.x=this.x+this.y;
+                    }
+                    this.y=0;
+                    this.moveStateY='b';
+                }
+                if(this.x<0){
+                    if(this.moveStateY=='b'){
+                        this.y=this.y+this.x;
+                    }
+                    if(this.moveStateY=='t'){
+                        this.y=this.y-this.x;
+                    }
+                    this.x=0;
+                    this.moveStateX='r';
+                }
+                if(this.x+this.size>400){
+                    if(this.moveStateY=='t'){
+                        this.y=this.y+this.x-400+this.size;
+                    }
+                    if(this.moveStateY=='b'){
+                        this.y=this.y-(this.x-400+this.size);
+                    }
+                    this.x=400-this.size;
+                    this.moveStateX='l';
+                }
+                this.selector.style.left=this.x+'px';
+                this.selector.style.top=this.y+'px';
+            }
+            !(ball in _grobal) && (_grobal.ball=function(){
+                return new ball(...arguments)
+            })
+        })()
+        // selector,size,bg_color,x,y,speed,moveStateX,moveStateY
+        //ball('.circle',20,'deeppink',100,100,20,'r','t')
+        //过渡时间需要适应改变，以后完善，
+        //改变过渡时间后，小球到边界时呈现不同效果，会0.2s时会在边界短暂停留，为0.4s时会在碰撞后减速（相比于碰撞前），然后恢复速度（相比以碰撞前）。是我移动轨迹方法导致出现的情况吗？
+        ball('.circle',20,'deeppink',100,80,20)
+        ball({
+            selector:'.c1',
+            size:30,
+            bg_color:'black',
+            x:100,
+            y:20,
+            speed:10,
+            moveStateX:'l',
+            moveStateY:'b',
+        })
+    </script>
+</body>
+</html>
