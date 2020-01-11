@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{
+            height: 1200px;
+        }
+        .divall{
+            padding: 5px 15px;
+            background-color: #006dcc;
+            color: white;
+            position: absolute;
+        }
+        .xia{
+            left: 200px;
+            top: 200px;
+        }
+        .shang{
+            left: 600px;
+            top: 200px;
+        }
+        .zuo{
+            left: 1000px;
+            top: 200px;
+        }
+
+        .you{
+            left: 200px;
+            top: 400px;
+        }
+        .shangzuo{
+            left: 600px;
+            top: 400px;
+        }
+        .shangyou{
+            left: 1000px;
+            top: 400px;
+        }
+
+        .xiazuo{
+            left: 200px;
+            top: 600px;
+        }
+        .xiayou{
+            left: 600px;
+            top: 600px;
+        }
+        .zuoshang{
+            left: 1000px;
+            top: 600px;
+            height: 150px;
+        }
+
+        .zuoxia{
+            left: 200px;
+            top: 800px;
+            height: 150px;
+        }
+        .youshang{
+            left: 600px;
+            top: 800px;
+            height: 150px;
+        }
+        .youxia{
+            left: 1000px;
+            top: 800px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="divall xia"><span>提示框位于目标元素下方</span></div>
+    <div class="divall shang"><span>提示框位于目标元素上方</span></div>
+    <div class="divall zuo"><span>提示框位于目标元素左方</span></div>
+
+    <div class="divall you"><span>提示框位于目标元素右方</span></div>
+    <div class="divall shangzuo"><span>提示框位于目标元素上左方</span></div>
+    <div class="divall shangyou"><span>提示框位于目标元素上右方</span></div>
+
+    <div class="divall xiazuo"><span>提示框位于目标元素下左方</span></div>
+    <div class="divall xiayou"><span>提示框位于目标元素下右方</span></div>
+    <div class="divall zuoshang"><span>提示框位于目标元素左上方</span></div>
+
+    <div class="divall zuoxia"><span>提示框位于目标元素左下方</span></div>
+    <div class="divall youshang"><span>提示框位于目标元素右上方</span></div>
+    <div class="divall youxia"><span>提示框位于目标元素右下方</span></div>
+    <script>
+        (function(){
+            var _grobal=function(){
+                return this
+            }();
+            var toast=function(){
+                var obj=arguments[0];
+                this.width=obj.width || 160;
+                this.height=obj.height || 'auto';
+                this.txt=obj.text || '默认内容';
+                this.selector=document.querySelector(obj.selector);
+                this.position=obj.position || 'b';
+                this.align=obj.align || 'c';
+                this.init();
+            }
+            toast.prototype.init=function(){
+                    var div=document.createElement('div');
+                    div.style.height=this.height+'px';
+                    div.style.width=this.width+'px';
+                    div.innerText=this.txt;
+                    var sanjiao=document.createElement('div');
+                    this.selector.appendChild(div);
+                    this.selector.appendChild(sanjiao);
+                    console.log(div.clientHeight)
+                    //提示框写入公共样式
+                    div.style.position='absolute';
+                    div.style.padding='5px';
+                    div.style.backgroundColor='rgba(0,0,0,.5)';
+                    //给三角形写入公共样式
+                    sanjiao.style.borderWidth='10px';
+                    sanjiao.style.borderStyle='solid';
+                    sanjiao.style.borderColor='transparent';
+                    sanjiao.style.position='absolute';
+                    sanjiao.style.height='0px';
+                    sanjiao.style.width='0px';
+                    //判断提示框，三角形的方向
+                        //三角形默认居中对齐，所以在判断方向的同时确定，
+                    switch (this.position){
+                        case 'b':
+                                sanjiao.style.borderBottomColor='rgba(0,0,0,.5)';                            
+                                sanjiao.style.bottom='-14px';
+                                div.style.bottom=-div.clientHeight-13.5+'px';
+                                sanjiao.style.left='calc(50% - 10px)';
+                                div.style.left='calc(50% - 78px)'
+                                break;
+                        case 'r':
+                                sanjiao.style.borderRightColor='rgba(0,0,0,.5)';
+                                sanjiao.style.right='-14px';
+                                div.style.right=-this.width-10-14+'px';
+                                sanjiao.style.top='calc(50% - 10px)';
+                                div.style.top='calc(50% - 15px)'
+                                break;
+                        case 't':
+                                sanjiao.style.borderTopColor='rgba(0,0,0,.5)';
+                                sanjiao.style.top='-14px';
+                                div.style.top=-div.clientHeight-13+'px';
+                                sanjiao.style.left='calc(50% - 10px)';
+                                div.style.left='calc(50% - 78px)'
+                                break;
+                        case 'l':
+                                sanjiao.style.borderLeftColor='rgba(0,0,0,.5)';
+                                sanjiao.style.left='-14px';
+                                div.style.left=-this.width-10-14+'px'; 
+                                sanjiao.style.top='calc(50% - 10px)'; 
+                                div.style.top='calc(50% - 15px)';
+                                break;   
+                    }
+                    //判断提示框的对齐方式
+                    switch (this.align){
+                        case 'l':div.style.left='0px';
+                                if(this.selector.clientWidth>this.width){
+                                    sanjiao.style.left='20px'
+                                };
+                                break;
+                        case 'r':div.style.right='0px';
+                                div.style.left='';
+                                if(this.selector.clientWidth>this.width){
+                                    sanjiao.style.left='calc(100% - 50px)'
+                                };
+                                break;
+                        case 't':div.style.top='0px';
+                                if(this.selector.clientHeight>div.clientHeight){
+                                    sanjiao.style.top='5px'
+                                };
+                                break;
+                        case 'b':div.style.bottom='0px';
+                                div.style.top='';
+                                if(this.selector.clientHeight>div.clientHeight){
+                                    sanjiao.style.top='calc(100% - 22px)'
+                                };
+                                break;
+                    }  
+                }
+
+            !('toast' in _grobal) && (_grobal.toast=toast) 
+        })()
+        new toast({selector:'.xia',position:'b',})
+        new toast({selector:'.shang',position:'t',})
+        new toast({selector:'.zuo',position:'l',})
+        new toast({selector:'.you',position:'r'})
+        new toast({selector:'.shangzuo',position:'t',align:'l'})
+        new toast({selector:'.shangyou',position:'t',align:'r'})
+        new toast({selector:'.xiazuo',position:'b',align:'l'})
+        new toast({selector:'.xiayou',position:'b',align:'r'})
+        new toast({selector:'.zuoshang',position:'l',align:'t'})
+        new toast({selector:'.zuoxia',position:'l',align:'b'})
+        new toast({selector:'.youshang',position:'r',align:'t'})
+        new toast({selector:'.youxia',position:'r',align:'b'})
+    </script>
+</body>
+</html>
